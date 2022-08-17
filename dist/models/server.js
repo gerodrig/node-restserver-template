@@ -6,8 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const users_routes_1 = __importDefault(require("../routes/users.routes"));
 class Server {
     constructor() {
+        this.usersPath = '/api/users';
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || 3000;
         //middlewares
@@ -18,12 +20,14 @@ class Server {
     middlewares() {
         //public directory
         this.app.use(express_1.default.static('public'));
+        //body read and parse
+        this.app.use(express_1.default.json());
         //define CORS
         this.app.use((0, cors_1.default)());
     }
     //routes method
     routes() {
-        this.app.use('/api/users', require('../routes/user.routes'));
+        this.app.use(this.usersPath, users_routes_1.default);
     }
     ;
     listen() {
