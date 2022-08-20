@@ -30,3 +30,7 @@ export const encryptPassword = (password:string = '', saltGen: number = 10): str
     const salt = bcryptjs.genSaltSync(saltGen);
     return bcryptjs.hashSync(password, salt);
 }
+
+export const comparePassword = (password:string = '', encryptedPassword: string = ''): boolean => {
+    return bcryptjs.compareSync(password, encryptedPassword);
+}

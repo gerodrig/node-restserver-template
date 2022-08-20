@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import { usersGet, usersPut, usersPost, usersDelete } from '../controller/users.controller';
 import { isValidRole, isValidEmail, userByIdExists } from '../helpers';
-import {validateFields} from '../middlewares/';
+import {validateFields, validateJWT, isAdminRole, hasRoles} from '../middlewares/';
 
 const router = Router();
 
@@ -29,6 +29,9 @@ router.post('/', [
 ],usersPost);
 
 router.delete('/:id',[
+    validateJWT,
+    // isAdminRole,
+    hasRoles('admin', 'super-admin'),
     check('id', 'ID is not valid').isMongoId(),
     check('id').custom( userByIdExists ), 
     validateFields

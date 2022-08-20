@@ -37,8 +37,8 @@ const UserSchema = new Schema({
 
 //override the toJSON method to remove the password and __V from the response
 UserSchema.methods.toJSON = function() {
-    const {__v, password, ...user} = this.toObject();
-
+    const {__v, password, _id, ...user} = this.toObject();
+    user.uid = _id;
     return user;
 }
 

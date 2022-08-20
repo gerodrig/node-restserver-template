@@ -1,5 +1,4 @@
 import { Response, Request } from 'express';
-import bcryptjs from 'bcryptjs';
 
 import { User } from '../models';
 import { IUser } from '../interfaces';
@@ -56,12 +55,16 @@ export const usersPut = async (req: Request, res: Response) => {
 
 export const usersPost = async (req: Request, res: Response) => {
 
-    const {name, email, password, role} = req.body as IUser;
+    const {name, email , password, role} = req.body as IUser;
     const user = new User({name , email, password, role});
 
     //Ecrypt password
     user.password = encryptPassword(password);
+
+    //User Email to lowercase
+    user.email = email.toLowerCase();
   
+
     
     //save in DB
     await user.save();
@@ -71,15 +74,16 @@ export const usersPost = async (req: Request, res: Response) => {
     });
 }
 
-export const usersDelete = async (req: Request, res: Response) => {
+export const usersDelete = async (req: any, res: Response) => {
     const { id } = req.params;
 
     //! delete user from DB This is not recommended as we need to set user.isActive to false
     //* const user = await User.findByIdAndDelete(id);
     const user = await User.findByIdAndUpdate(id, {isActive: false});
 
+    // TODO: get authenticated user
+
     res.json({
-        message: 'Rest API with typescript DELETE',
         user
     });
 }
