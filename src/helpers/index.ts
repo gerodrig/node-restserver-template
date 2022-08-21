@@ -1,3 +1,5 @@
+export { googleVerify } from './google-verify';
+
 export { generateJWT } from './generate-jwt';
 
 export {
@@ -7,4 +9,5 @@ export {
   userByIdExists,
   comparePassword,
 } from './db-validators';
+
 
