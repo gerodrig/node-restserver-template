@@ -8,6 +8,8 @@ export {
   encryptPassword,
   userByIdExists,
   comparePassword,
+  categoryExists,
+  productExists,
 } from './db-validators';
 
 

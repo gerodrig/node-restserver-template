@@ -1,14 +1,24 @@
 import express, { Express }  from 'express';
 import cors from 'cors';
-import {authRouter, userRouter} from '../routes/';
+import {authRouter, userRouter, categoriesRouter, productsRouter, searchRouter} from '../routes/';
 import { dbConnection } from '../database/config';
+
+interface IPaths {
+    [key: string]: string;
+}
 
 
 export class Server {
     app: Express;
     port: number | string;
-    usersPath: string = '/api/users';
-    authPath: string = '/api/auth';
+
+    paths: IPaths = {
+        auth: '/api/auth',
+        users: '/api/users',
+        categories: '/api/categories',
+        products: '/api/products',
+        search: '/api/search',
+    }
 
     constructor(){
         this.app = express();
@@ -41,8 +51,11 @@ export class Server {
 
     //routes method
     routes(){
-        this.app.use(this.authPath, authRouter);
-        this.app.use(this.usersPath, userRouter);
+        this.app.use(this.paths.auth, authRouter);
+        this.app.use(this.paths.users, userRouter);
+        this.app.use(this.paths.categories, categoriesRouter);
+        this.app.use(this.paths.products, productsRouter);
+        this.app.use(this.paths.search, searchRouter);
     };
 
     listen(){

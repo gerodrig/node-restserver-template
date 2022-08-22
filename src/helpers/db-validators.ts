@@ -1,4 +1,4 @@
-import { Role, User } from "../models/";
+import { Category, Product, Role, User } from "../models/";
 import bcryptjs from 'bcryptjs';
 
 
@@ -23,6 +23,22 @@ export const userByIdExists = async (id = '') => {
 
     if(!user){
         throw new Error(`User with ID ${id} not found`);
+    }
+}
+export const categoryExists = async (id = '') => {
+    //check if param is valid mongo id
+    const category = await Category.findById(id);
+
+    if(!category){
+        throw new Error(`Category with ID ${id} not found`);
+    }
+}
+export const productExists = async (id = '') => {
+    //check if param is valid mongo id
+    const product = await Product.findById(id);
+
+    if(!product){
+        throw new Error(`Product with ID ${id} not found`);
     }
 }
 

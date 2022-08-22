@@ -22,6 +22,7 @@ export const validateJWT = async (
       token,
       process.env.JWT_SECRET as string
     ) as {uid: string};
+    //console.warn(uid);
 
     //read user that match with uid and add it to req.user
     const user = await User.findById(uid);
@@ -33,7 +34,7 @@ export const validateJWT = async (
       });
     }
 
-    //ccheck if user state is active
+    //check if user state is active
     if (!user?.isActive) {
       return res.status(401).json({
         message: 'Invalid token - User is not active',
