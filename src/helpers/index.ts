@@ -1,15 +1,24 @@
-export { googleVerify } from './google-verify';
+export { googleVerify } from './google-verify.helper';
 
-export { generateJWT } from './generate-jwt';
+export { generateJWT } from './generate-jwt.helper';
 
 export {
-  isValidRole,
-  isValidEmail,
-  encryptPassword,
-  userByIdExists,
-  comparePassword,
+  validateUploadedFile,
+  uploadFile,
+  deleteFile,
+  getImagePath,
+  getAssetPath,
+  uploadCloudinary,
+  deleteCloudinary
+} from './file-management.helper';
+
+export {
+  allowedCollections,
   categoryExists,
+  comparePassword,
+  encryptPassword,
+  isValidEmail,
+  isValidRole,
   productExists,
-} from './db-validators';
-
-
+  userByIdExists,
+} from './db-validators.helper';

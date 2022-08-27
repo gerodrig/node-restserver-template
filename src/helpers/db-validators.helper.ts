@@ -50,3 +50,11 @@ export const encryptPassword = (password:string = '', saltGen: number = 10): str
 export const comparePassword = (password:string = '', encryptedPassword: string = ''): boolean => {
     return bcryptjs.compareSync(password, encryptedPassword);
 }
+
+export const allowedCollections = (collection: string = '', allowed: string[] = []): boolean => {
+    if(!allowed.includes(collection)){
+        throw new Error(`Collection ${collection} is not allowed. Allowed collections are ${allowed}`);
+    }
+    
+    return true;
+}

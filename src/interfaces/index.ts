@@ -29,4 +29,5 @@ export interface IProduct {
     category: ICategory;
     description?: string;
     available?: boolean;
+    image?: string;
 }

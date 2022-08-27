@@ -1,6 +1,7 @@
 import express, { Express }  from 'express';
 import cors from 'cors';
-import {authRouter, userRouter, categoriesRouter, productsRouter, searchRouter} from '../routes/';
+import fileUpload from 'express-fileupload';
+import {authRouter, userRouter, categoriesRouter, productsRouter, searchRouter, uploadsRouter} from '../routes/';
 import { dbConnection } from '../database/config';
 
 interface IPaths {
@@ -18,6 +19,7 @@ export class Server {
         categories: '/api/categories',
         products: '/api/products',
         search: '/api/search',
+        uploads: '/api/uploads',
     }
 
     constructor(){
@@ -47,6 +49,13 @@ export class Server {
 
         //define CORS
         this.app.use(cors());
+
+        //files upload
+        this.app.use(fileUpload({
+            useTempFiles : true,
+            tempFileDir : '/tmp/',
+            createParentPath : true,
+        }));
     }
 
     //routes method
@@ -56,6 +65,7 @@ export class Server {
         this.app.use(this.paths.categories, categoriesRouter);
         this.app.use(this.paths.products, productsRouter);
         this.app.use(this.paths.search, searchRouter);
+        this.app.use(this.paths.uploads, uploadsRouter);
     };
 
     listen(){
