@@ -29,16 +29,25 @@ export const login = async (req: Request, res: Response) => {
     if (!comparePassword(password, user.password)) {
       return res.status(401).json({
         ok: false,
-        message: 'Password is incorrect',
+        message: 'Invalid Credentials',
       });
     }
+
+    const userResponse = {
+      uid: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      image: user.image,
+      isActive: user.isActive,
+    };
     
     //Generate JWT
     const token = await generateJWT(user._id.toString());
 
     return res.json({
       message: 'Login Ok',
-      user,
+      user: userResponse,
       token,
     });
   } catch (error) {
@@ -68,7 +77,7 @@ export const googleSignIn = async (req: Request, res: Response) => {
         image,
         password: 'google',
         role: 'user',
-        google: true
+        google: true,
       }
 
       user = new User(data);
@@ -104,4 +113,16 @@ export const googleSignIn = async (req: Request, res: Response) => {
 }
 
 
+}
+
+export const validateToken = async (req: any, res: Response) => {
+
+ //generate new JWT
+  const token = await generateJWT(req.user.uid);
+
+
+  res.json({
+    user: req.user,
+    token
+  });
 }

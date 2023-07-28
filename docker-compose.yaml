@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: mongo:5.0.0
+    image: mongo:6.0.4
     container_name: nodejs-mongo
     restart: always
     ports:

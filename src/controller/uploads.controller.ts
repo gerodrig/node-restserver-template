@@ -172,8 +172,14 @@ export const updateImageCloudinary = async (req: any, res: Response) => {
         if(secure_url){
             model.image = secure_url;
             await model.save();
+            const modelObj = model.toObject();
             return res.json({
-                model
+                name: modelObj.name,
+                email: modelObj.email,
+                image: modelObj.image,
+                role: modelObj.role,
+                isActive: modelObj.isActive,
+                uid: modelObj._id
             });
         }
 

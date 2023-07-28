@@ -22,7 +22,6 @@ export const validateJWT = async (
       token,
       process.env.JWT_SECRET as string
     ) as {uid: string};
-    //console.warn(uid);
 
     //read user that match with uid and add it to req.user
     const user = await User.findById(uid);
@@ -41,7 +40,14 @@ export const validateJWT = async (
       });
     }
 
-    req.user = user;
+    req.user = {
+      uid,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      role: user.role,
+      isActive: user.isActive,
+    }
 
     next();
   } catch (error) {

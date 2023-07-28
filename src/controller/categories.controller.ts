@@ -9,7 +9,7 @@ export const getCategories = async (req: Request, res: Response) => {
     const categories = await Category.find({ status: true })
         .skip(Number(skip))
         .limit(Number(limit))
-        .populate('user', 'id')
+        .populate('user', 'name')
         .sort({ name: 1 });
 
     res.json({
@@ -24,13 +24,14 @@ export const getCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
     
     const category = await Category.findById(id)
-                                    .populate('user', 'id');
+                                    .populate('user', 'name');
 
     if(!category){
         return res.status(404).json({
             message: `Category ${category} not found`,
         });
     }
+
 
     res.json({
         category,
@@ -39,20 +40,30 @@ export const getCategory = async (req: Request, res: Response) => {
 
 export const createCategory = async (req: any, res: Response) => {
 
-    const name = req.body.name.toUpperCase() as string;
+    // const name = req.body.name.toUpperCase() as string;
+    const { name } = req.body;
 
     const dbCategory = await Category.findOne({ name });
 
     if(dbCategory){
         return res.status(400).json({
-            message: `Category ${dbCategory.name} already exists`
+            message: `Category ${name} already exists`
+        });
+    }
+
+    if(!req.user){
+        return res.status(500).json({
+            message: 'User is required to create Category'
         });
     }
 
     //Generate data to save
     const data = {
         name,
-        user: req.user._id
+        user: {
+            _id: req.user.uid,
+            name: req.user.name
+        }
     }
 
     const category = new Category(data);
@@ -60,8 +71,12 @@ export const createCategory = async (req: any, res: Response) => {
     //Save to db
     await category.save();
 
-    return res.status(201).json({
-        message: 'Category created successfully',
+    await category.populate('user', 'name');
+
+    console.log(category);
+
+    res.json({
+        message: 'Category updated successfully',
         category
     });
 }
@@ -69,11 +84,17 @@ export const createCategory = async (req: any, res: Response) => {
 //UPDATE category - private - any person with a valid token
 export const updateCategory = async (req: any, res: Response) => {
 
-    const { id } = req.params;
-    const { state, user, ...data } = req.body;
+    //check if user is not active
+    if(!req.user.isActive){
+        return res.status(401).json({
+            message: 'User is not active'
+        });
+    }
 
-    data.name = data.name.toUpperCase() as string;
-    data.user = req.user._id;
+    const { id } = req.params;
+    const { ...data } = req.body;
+
+    data.user = req.user.uid;
     
     //search for category and update
     const category = await Category.findByIdAndUpdate(id, data, { new: true });
@@ -86,7 +107,14 @@ export const updateCategory = async (req: any, res: Response) => {
 
     res.json({
         message: 'Category updated successfully',
-        category
+        category: {
+            _id: category._id,
+            name: category.name,
+            user: {
+                _id: req.user.uid,
+                name: req.user.name
+            }
+        }
     });
 
 }

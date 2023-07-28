@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 
 import { validateFields } from '../middlewares';
-import { googleSignIn, login } from '../controller/auth.controller';
+import { googleSignIn, login, validateToken } from '../controller/auth.controller';
+import { validateJWT } from '../middlewares/validate-jwt';
 
 const router = Router();
 
@@ -18,6 +19,11 @@ router.post('/google',[
     check('id_token', 'Google id token is required').not().isEmpty(),
     validateFields
 ], googleSignIn );
+
+//validate token
+router.get('/',[
+    validateJWT
+], validateToken);
 
 
 

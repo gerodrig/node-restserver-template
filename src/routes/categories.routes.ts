@@ -39,7 +39,7 @@ router.put('/:id',[
 // DELETE delete category - private - admins with a valid token. Set status active to false
 router.delete('/:id',[
     validateJWT,
-    isAdminRole,
+    // isAdminRole,
     check('id', 'ID is not valid').isMongoId(),
     check('id').custom( categoryExists ),
     validateFields

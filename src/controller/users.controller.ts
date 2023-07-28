@@ -3,6 +3,7 @@ import { Response, Request } from 'express';
 import { User } from '../models';
 import { IUser } from '../interfaces';
 import { encryptPassword } from '../helpers';
+import { generateJWT } from '../helpers/generate-jwt.helper';
 
 export const usersGet = async (req: Request, res: Response) => {
 
@@ -35,17 +36,45 @@ export const usersGet = async (req: Request, res: Response) => {
     });
 }
 
+export const userGet = async (req: Request, res: Response) => {
+    
+        const { id } = req.params;
+    
+        const user = await User.findById(id).select('-google -_id -password -__v');
+
+        if(!user){
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
+        //add uid to user
+        const userObj = user.toObject();
+
+        userObj.uid = id;
+    
+        res.json({
+            message: 'User found',
+            user: userObj
+        });
+}
+
 export const usersPut = async (req: Request, res: Response) => {
 
     const { id } = req.params;
-    const { _id, password, google, email, ...rest } = req.body;
+    const { _id, password, google, ...rest } = req.body;
 
-    //TODO: validate in Database
+    // validate in Database
     if(password){
         rest.password = encryptPassword(password);
     }
 
-    const user = await User.findByIdAndUpdate(id, rest).select('-google -_id -image');
+    const user = await User.findByIdAndUpdate(id, rest).select('-google -_id -password');
+
+    //populate user with role and image
+    user?.populate('role', 'name');
+
+    user!.email = rest.email?.toLowerCase() || user!.email;
 
     res.json({
         message: 'Rest API with typescript PUT',
@@ -55,7 +84,10 @@ export const usersPut = async (req: Request, res: Response) => {
 
 export const usersPost = async (req: Request, res: Response) => {
 
-    const {name, email , password, role} = req.body as IUser;
+    console.log(req.body);
+
+    const {name, email , password, role = 'user'} = req.body as IUser;
+    console.log({role});
     const user = new User({name , email, password, role});
 
     //Ecrypt password
@@ -63,14 +95,16 @@ export const usersPost = async (req: Request, res: Response) => {
 
     //User Email to lowercase
     user.email = email.toLowerCase();
-  
-
-    
+      
     //save in DB
     await user.save();
 
+    //Generate JWT
+    const token = await generateJWT(user.id);
+
     res.json({
-        user
+        user,
+        token
     });
 }
 
